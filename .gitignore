@@ -1,0 +1,28 @@
+
+# Python y FastAPI
+**/.venv/
+**/venv/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+
+# Variables privadas y credenciales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Android Studio y Gradle
+**/.gradle/
+**/.idea/
+**/.kotlin/
+**/build/
+**/local.properties
+*.iml
+*.apk
+*.aab
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
