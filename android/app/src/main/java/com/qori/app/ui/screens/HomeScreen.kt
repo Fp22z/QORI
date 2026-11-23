@@ -15,7 +15,10 @@ fun HomeScreen(
     nombre: String,
     correo: String,
     onCerrarSesion: () -> Unit,
-    onOpenAccounts: () -> Unit
+    onOpenAccounts: () -> Unit,
+    onOpenProfile: () -> Unit = {},   // HU12
+    onOpenExpense: () -> Unit = {},   // HU09
+    onOpenBalances: () -> Unit = {}   // HU10
 ) {
     var mostrarMenu by remember { mutableStateOf(false) }
 
@@ -57,7 +60,10 @@ fun HomeScreen(
                 ) {
                     DropdownMenuItem(
                         text = { Text("Mi perfil") },
-                        onClick = { mostrarMenu = false }
+                        onClick = {
+                            mostrarMenu = false
+                            onOpenProfile()
+                        }
                     )
 
                     DropdownMenuItem(
@@ -94,5 +100,9 @@ fun HomeScreen(
         Text(text = "Correo: $correo")
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onOpenAccounts) { Text("Mis cuentas") }
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(onClick = onOpenExpense) { Text("Registrar gasto") }
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedButton(onClick = onOpenBalances) { Text("Ver saldos") }
     }
 }
