@@ -14,7 +14,8 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 fun HomeScreen(
     nombre: String,
     correo: String,
-    onCerrarSesion: () -> Unit
+    onCerrarSesion: () -> Unit,
+    onOpenAccounts: () -> Unit
 ) {
     var mostrarMenu by remember { mutableStateOf(false) }
 
@@ -91,5 +92,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(text = "Correo: $correo")
+        Spacer(modifier = Modifier.height(24.dp))
+        Button(onClick = onOpenAccounts) { Text("Mis cuentas") }
     }
 }

@@ -9,6 +9,10 @@ import androidx.compose.runtime.mutableStateOf
 import com.qori.app.data.LoginRequest
 import com.qori.app.data.LoginResponse
 import com.qori.app.data.RetrofitClient
+import com.qori.app.ui.screens.AccountsScreen
+import com.qori.app.ui.screens.CategoriesScreen
+import com.qori.app.ui.screens.IncomeScreen
+import com.qori.app.ui.screens.CreateAccountScreen
 import com.qori.app.ui.screens.HomeScreen
 import com.qori.app.ui.screens.LoginScreen
 import com.qori.app.ui.screens.RegistroScreen
@@ -33,14 +37,43 @@ class MainActivity : ComponentActivity() {
 
                 val usuario = usuarioActual.value
 
-                if (usuario != null) {
+                if (usuario != null && pantallaActual.value == "accounts") {
+                    AccountsScreen(
+                        token = "Bearer ${usuario.access_token}",
+                        onBack = { pantallaActual.value = "home" },
+                        onCreate = { pantallaActual.value = "createAccount" },
+                        onIncome = { pantallaActual.value = "income" },
+                        onCategories = { pantallaActual.value = "categories" }
+                    )
+                } else if (usuario != null && pantallaActual.value == "categories") {
+                    CategoriesScreen("Bearer ${usuario.access_token}") { pantallaActual.value = "accounts" }
+                } else if (usuario != null && pantallaActual.value == "income") {
+                    IncomeScreen(
+                        token = "Bearer ${usuario.access_token}",
+                        onBack = { pantallaActual.value = "accounts" },
+                        onSaved = {
+                            pantallaActual.value = "accounts"
+                            Toast.makeText(this@MainActivity, "Ingreso registrado", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else if (usuario != null && pantallaActual.value == "createAccount") {
+                    CreateAccountScreen(
+                        token = "Bearer ${usuario.access_token}",
+                        onBack = { pantallaActual.value = "accounts" },
+                        onSaved = {
+                            pantallaActual.value = "accounts"
+                            Toast.makeText(this@MainActivity, "Cuenta creada", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else if (usuario != null) {
 
                     HomeScreen(
                         nombre = usuario.nombre,
                         correo = usuario.correo,
                         onCerrarSesion = {
                             cerrarSesion()
-                        }
+                        },
+                        onOpenAccounts = { pantallaActual.value = "accounts" }
                     )
 
                 } else if (pantallaActual.value == "registro") {

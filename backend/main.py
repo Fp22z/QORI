@@ -1,11 +1,14 @@
 from fastapi import FastAPI
 from database import probar_conexion
-from routers import auth
+from routers import auth, categorias, cuentas, movimientos
 
 app = FastAPI()
 
 # Conectar el módulo de autenticación
 app.include_router(auth.router)
+app.include_router(cuentas.router)
+app.include_router(categorias.router)
+app.include_router(movimientos.router)
 
 
 # Página de bienvenida
