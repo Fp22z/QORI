@@ -3,10 +3,12 @@ package com.qori.app.data
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Query
 import retrofit2.Response
 import retrofit2.http.Header
+import retrofit2.http.Path
 
 interface ApiService {
 
@@ -24,6 +26,40 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Body income: CreateIncomeRequest
     ): Response<IncomeResponse>
+
+    // HU09 - Registrar gasto
+    @POST("movimientos/gastos")
+    suspend fun createExpense(
+        @Header("Authorization") token: String,
+        @Body expense: CreateExpenseRequest
+    ): Response<ExpenseResponse>
+
+    // HU10 - Consultar saldos
+    @GET("saldos")
+    suspend fun listBalances(@Header("Authorization") token: String): Response<BalancesResponse>
+
+    @GET("saldos/{id}")
+    suspend fun getBalance(
+        @Header("Authorization") token: String,
+        @Path("id") accountId: String
+    ): Response<AccountBalance>
+
+    // HU11 - Recuperar contraseña
+    @POST("recuperacion/solicitar")
+    suspend fun requestRecoveryCode(@Body datos: RecoveryRequest): Response<RecoveryResponse>
+
+    @POST("recuperacion/restablecer")
+    suspend fun resetPassword(@Body datos: ResetPasswordRequest): Response<RecoveryResponse>
+
+    // HU12 - Perfil
+    @GET("perfil")
+    suspend fun getProfile(@Header("Authorization") token: String): Response<ProfileResponse>
+
+    @PATCH("perfil")
+    suspend fun updateProfile(
+        @Header("Authorization") token: String,
+        @Body profile: UpdateProfileRequest
+    ): Response<ProfileResponse>
 
     @POST("cuentas")
     fun createAccount(

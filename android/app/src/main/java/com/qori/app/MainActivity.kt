@@ -10,6 +10,10 @@ import com.qori.app.data.LoginRequest
 import com.qori.app.data.LoginResponse
 import com.qori.app.data.RetrofitClient
 import com.qori.app.ui.screens.AccountsScreen
+import com.qori.app.ui.screens.BalancesScreen
+import com.qori.app.ui.screens.ExpenseScreen
+import com.qori.app.ui.screens.ProfileScreen
+import com.qori.app.ui.screens.RecoverPasswordScreen
 import com.qori.app.ui.screens.CategoriesScreen
 import com.qori.app.ui.screens.IncomeScreen
 import com.qori.app.ui.screens.CreateAccountScreen
@@ -37,7 +41,34 @@ class MainActivity : ComponentActivity() {
 
                 val usuario = usuarioActual.value
 
-                if (usuario != null && pantallaActual.value == "accounts") {
+                if (usuario != null && pantallaActual.value == "expense") {
+                    // HU09 - Registrar gasto
+                    ExpenseScreen(
+                        token = "Bearer ${usuario.access_token}",
+                        onBack = { pantallaActual.value = "home" },
+                        onSaved = {
+                            pantallaActual.value = "home"
+                            Toast.makeText(this@MainActivity, "Gasto registrado", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else if (usuario != null && pantallaActual.value == "balances") {
+                    // HU10 - Consultar saldos
+                    BalancesScreen(
+                        token = "Bearer ${usuario.access_token}",
+                        onBack = { pantallaActual.value = "home" }
+                    )
+                } else if (usuario != null && pantallaActual.value == "profile") {
+                    // HU12 - Perfil e idioma
+                    ProfileScreen(
+                        token = "Bearer ${usuario.access_token}",
+                        correo = usuario.correo,
+                        onBack = { pantallaActual.value = "home" },
+                        onSaved = { nuevoNombre ->
+                            usuarioActual.value = usuario.copy(nombre = nuevoNombre)
+                            Toast.makeText(this@MainActivity, "Perfil actualizado", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                } else if (usuario != null && pantallaActual.value == "accounts") {
                     AccountsScreen(
                         token = "Bearer ${usuario.access_token}",
                         onBack = { pantallaActual.value = "home" },
@@ -73,9 +104,21 @@ class MainActivity : ComponentActivity() {
                         onCerrarSesion = {
                             cerrarSesion()
                         },
-                        onOpenAccounts = { pantallaActual.value = "accounts" }
+                        onOpenAccounts = { pantallaActual.value = "accounts" },
+                        onOpenProfile = { pantallaActual.value = "profile" },
+                        onOpenExpense = { pantallaActual.value = "expense" },
+                        onOpenBalances = { pantallaActual.value = "balances" }
                     )
 
+                } else if (pantallaActual.value == "recuperar") {
+                    // HU11 - Recuperar contraseña
+                    RecoverPasswordScreen(
+                        onBack = { pantallaActual.value = "login" },
+                        onListo = {
+                            pantallaActual.value = "login"
+                            Toast.makeText(this@MainActivity, "Contraseña actualizada. Inicia sesión.", Toast.LENGTH_LONG).show()
+                        }
+                    )
                 } else if (pantallaActual.value == "registro") {
 
                     RegistroScreen(
@@ -92,6 +135,9 @@ class MainActivity : ComponentActivity() {
                         },
                         onRegistrarse = {
                             pantallaActual.value = "registro"
+                        },
+                        onOlvideContrasena = {
+                            pantallaActual.value = "recuperar"
                         }
                     )
                 }

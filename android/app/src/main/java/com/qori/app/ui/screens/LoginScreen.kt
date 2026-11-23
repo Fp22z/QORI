@@ -13,7 +13,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoginScreen(
     onIniciarSesion: (String, String) -> Unit,
-    onRegistrarse: () -> Unit
+    onRegistrarse: () -> Unit,
+    onOlvideContrasena: () -> Unit = {} // HU11
 ) {
     var correo by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
@@ -79,6 +80,13 @@ fun LoginScreen(
             onClick = onRegistrarse
         ) {
             Text("¿Aún no tienes cuenta? Regístrate")
+        }
+
+        // HU11 - Recuperar contraseña
+        TextButton(
+            onClick = onOlvideContrasena
+        ) {
+            Text("¿Olvidaste tu contraseña?")
         }
 
     }
