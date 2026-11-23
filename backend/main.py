@@ -261,3 +261,55 @@ async def cerrar_sesion(
         "mensaje": "Sesión cerrada correctamente."
     }
 
+
+
+# HU04 - Identificación del usuario autenticado
+
+@app.get("/auth/me")
+async def obtener_usuario(
+    authorization: str = Header(...)
+):
+
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail="Se requiere una sesión válida."
+        )
+
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail="La autenticación no está configurada."
+        )
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            respuesta = await client.get(
+                f"{SUPABASE_URL}/auth/v1/user",
+                headers={
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": authorization
+                }
+            )
+
+    except httpx.RequestError:
+        raise HTTPException(
+            status_code=502,
+            detail="No se pudo verificar la sesión."
+        )
+
+    if respuesta.status_code != 200:
+        raise HTTPException(
+            status_code=401,
+            detail="Sesión inválida o expirada."
+        )
+
+    usuario = respuesta.json()
+
+    return {
+        "user_id": usuario["id"],
+        "correo": usuario.get("email", ""),
+        "nombre": usuario.get(
+            "user_metadata", {}
+        ).get("display_name", "")
+    }

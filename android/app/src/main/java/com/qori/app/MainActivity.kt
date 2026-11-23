@@ -16,6 +16,7 @@ import com.qori.app.ui.theme.ProyectoQoriTheme
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.qori.app.data.UsuarioResponse
 
 class MainActivity : ComponentActivity() {
 
@@ -83,13 +84,7 @@ class MainActivity : ComponentActivity() {
                         val usuario = response.body()
 
                         if (usuario != null) {
-                            usuarioActual.value = usuario
-
-                            Toast.makeText(
-                                this@MainActivity,
-                                "Inicio de sesión exitoso",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            verificarUsuario(usuario)
                         }
 
                     } else {
@@ -113,6 +108,60 @@ class MainActivity : ComponentActivity() {
                 }
             })
     }
+
+
+    private fun verificarUsuario(sesion: LoginResponse) {
+
+        val token = "Bearer ${sesion.access_token}"
+
+        RetrofitClient.apiService.obtenerUsuario(token)
+            .enqueue(object : Callback<UsuarioResponse> {
+
+                override fun onResponse(
+                    call: Call<UsuarioResponse>,
+                    response: Response<UsuarioResponse>
+                ) {
+                    if (response.isSuccessful) {
+
+                        val usuario = response.body()
+
+                        if (usuario != null) {
+                            usuarioActual.value = sesion.copy(
+                                nombre = usuario.nombre,
+                                correo = usuario.correo
+                            )
+
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Usuario verificado correctamente",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            mostrarErrorVerificacion()
+                        }
+
+                    } else {
+                        mostrarErrorVerificacion()
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<UsuarioResponse>,
+                    t: Throwable
+                ) {
+                    mostrarErrorVerificacion()
+                }
+            })
+    }
+
+    private fun mostrarErrorVerificacion() {
+        Toast.makeText(
+            this,
+            "No se pudo verificar la sesión",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
 
 
     private fun cerrarSesion() {

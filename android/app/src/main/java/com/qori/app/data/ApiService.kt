@@ -29,4 +29,9 @@ interface ApiService {
     ): Call<Map<String, String>>
 
 
+    @GET("auth/me")
+    fun obtenerUsuario(
+        @Header("Authorization") token: String
+    ): Call<UsuarioResponse>
+
 }
