@@ -4,6 +4,7 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Header
 
 interface ApiService {
 
@@ -20,5 +21,12 @@ interface ApiService {
     fun iniciarSesion(
         @Body datos: LoginRequest
     ): Call<LoginResponse>
+
+
+    @POST("auth/logout")
+    fun cerrarSesion(
+        @Header("Authorization") token: String
+    ): Call<Map<String, String>>
+
 
 }

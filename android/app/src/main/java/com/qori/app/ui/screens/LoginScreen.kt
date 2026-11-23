@@ -12,7 +12,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LoginScreen(
-    onIniciarSesion: (String, String) -> Unit
+    onIniciarSesion: (String, String) -> Unit,
+    onRegistrarse: () -> Unit
 ) {
     var correo by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
@@ -70,5 +71,15 @@ fun LoginScreen(
         ) {
             Text("Iniciar sesión")
         }
+
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextButton(
+            onClick = onRegistrarse
+        ) {
+            Text("¿Aún no tienes cuenta? Regístrate")
+        }
+
     }
 }

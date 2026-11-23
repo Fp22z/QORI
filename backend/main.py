@@ -197,11 +197,67 @@ async def iniciar_sesion(datos: LoginUsuario):
 
     sesion = respuesta.json()
 
+    
     return {
         "estado": "OK",
         "mensaje": "Inicio de sesión exitoso.",
+        "nombre": sesion.get("user", {})
+            .get("user_metadata", {})
+            .get("display_name", ""),
+        "correo": sesion.get("user", {}).get("email", ""),
         "access_token": sesion["access_token"],
         "refresh_token": sesion["refresh_token"],
         "token_type": sesion["token_type"],
         "expires_in": sesion["expires_in"]
     }
+
+
+
+# HU03 - Cierre de sesión
+
+from fastapi import Header
+
+@app.post("/auth/logout")
+async def cerrar_sesion(
+    authorization: str = Header(...)
+):
+
+    if not authorization.startswith("Bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail="Token de sesión no válido."
+        )
+
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail="La autenticación no está configurada."
+        )
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            respuesta = await client.post(
+                f"{SUPABASE_URL}/auth/v1/logout",
+                headers={
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": authorization
+                }
+            )
+
+    except httpx.RequestError:
+        raise HTTPException(
+            status_code=502,
+            detail="No se pudo conectar con Supabase."
+        )
+
+    if respuesta.status_code not in (200, 204):
+        raise HTTPException(
+            status_code=502,
+            detail="No se pudo completar el cierre de sesión."
+        )
+
+    return {
+        "estado": "OK",
+        "mensaje": "Sesión cerrada correctamente."
+    }
+

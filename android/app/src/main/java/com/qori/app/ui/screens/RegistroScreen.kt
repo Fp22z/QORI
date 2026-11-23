@@ -1,4 +1,3 @@
-
 package com.qori.app.ui.screens
 
 import android.util.Patterns
@@ -33,9 +32,12 @@ import com.qori.app.data.RetrofitClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.compose.material3.TextButton
 
 @Composable
-fun RegistroScreen() {
+fun RegistroScreen(
+    onIniciarSesion: () -> Unit
+) {
 
     val context = LocalContext.current
 
@@ -194,6 +196,11 @@ fun RegistroScreen() {
                 text = mensaje,
                 style = MaterialTheme.typography.bodyMedium
             )
+        }
+        TextButton(
+            onClick = onIniciarSesion
+        ) {
+            Text("¿Ya tienes una cuenta? Iniciar sesión")
         }
     }
 }
