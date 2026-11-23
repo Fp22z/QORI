@@ -129,3 +129,79 @@ async def registrar_usuario(datos: RegistroUsuario):
             "Revise su correo si se requiere confirmación."
         )
     }
+
+
+
+# HU02 - Inicio de sesión
+
+class LoginUsuario(BaseModel):
+    correo: str
+    contrasena: str
+
+
+@app.post("/auth/login")
+async def iniciar_sesion(datos: LoginUsuario):
+
+    correo = datos.correo.strip().lower()
+
+    if not correo or not datos.contrasena:
+        raise HTTPException(
+            status_code=400,
+            detail="Ingrese su correo y contraseña."
+        )
+
+    if not SUPABASE_URL or not SUPABASE_KEY:
+        raise HTTPException(
+            status_code=500,
+            detail="La autenticación no está configurada."
+        )
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            respuesta = await client.post(
+                f"{SUPABASE_URL}/auth/v1/token",
+                params={"grant_type": "password"},
+                headers={
+                    "apikey": SUPABASE_KEY,
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "email": correo,
+                    "password": datos.contrasena
+                }
+            )
+
+    except httpx.RequestError:
+        raise HTTPException(
+            status_code=502,
+            detail="No se pudo conectar con Supabase."
+        )
+
+    if respuesta.status_code != 200:
+        if respuesta.status_code == 429:
+            raise HTTPException(
+                status_code=429,
+                detail="Demasiados intentos. Intente más tarde."
+            )
+
+        if respuesta.status_code >= 500:
+            raise HTTPException(
+                status_code=502,
+                detail="El servicio de autenticación no está disponible."
+            )
+
+        raise HTTPException(
+            status_code=401,
+            detail="No se pudo iniciar sesión. Verifique sus credenciales y la confirmación del correo."
+        )
+
+    sesion = respuesta.json()
+
+    return {
+        "estado": "OK",
+        "mensaje": "Inicio de sesión exitoso.",
+        "access_token": sesion["access_token"],
+        "refresh_token": sesion["refresh_token"],
+        "token_type": sesion["token_type"],
+        "expires_in": sesion["expires_in"]
+    }

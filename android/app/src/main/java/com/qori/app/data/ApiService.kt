@@ -14,4 +14,11 @@ interface ApiService {
     fun registrarUsuario(
         @Body datos: RegistroRequest
     ): Call<RegistroResponse>
+
+
+    @POST("auth/login")
+    fun iniciarSesion(
+        @Body datos: LoginRequest
+    ): Call<LoginResponse>
+
 }
